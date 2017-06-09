@@ -17,6 +17,8 @@ class Map {
     public $vehicles=[];
     public $aircrafts=[];
 
+    public $active_unit = Null;
+
     public function __construct($size_x, $size_y) {
         $this->size_x = $size_x;
         $this->size_y = $size_y;
@@ -166,5 +168,45 @@ class Map {
             'size_x' =>  5 + $first_aircraft->size_x + 5 + $this->red_base->size_x + 10,
             'size_y' =>  5 + $this->red_base->size_y + 10
         ];
+    }
+
+    public function detect_unit($x, $y) {
+        foreach ( $this->soldiers as &$soldier ) {
+            if ( $x >= $soldier->pos_x && $x <= $soldier->pos_x + $soldier->size_x &&
+                $y >= $soldier->pos_y && $y <= $soldier->pos_y + $soldier->size_y    ) {
+
+                return $soldier;
+            }
+        }
+        
+        foreach ( $this->vehicles as &$vehicle ) {
+            if ( $x >= $vehicle->pos_x && $x <= $vehicle->pos_x + $vehicle->size_x &&
+                 $y >= $vehicle->pos_y && $y <= $vehicle->pos_y + $vehicle->size_y    ) {
+                return $vehicle;
+            }
+        }
+        
+        foreach ( $this->aircrafts as &$aircraft ) {
+            if ( $x >= $aircraft->pos_x && $x <= $aircraft->pos_x + $aircraft->size_x &&
+                 $y >= $aircraft->pos_y && $y <= $aircraft->pos_y + $aircraft->size_y    ) {
+                return $aircraft;
+            }
+        }
+
+        return null;
+    }
+
+    public function remove_active_from_units() {
+        foreach ( $this->soldiers as &$soldier ) {
+            $soldier->active = 0;
+        }
+
+        foreach ( $this->vehicles as &$vehicle ) {
+            $vehicle->active = 0;
+        }
+
+        foreach ( $this->aircrafts as &$aircraft ) {
+            $aircraft->active = 0;
+        }
     }
 }

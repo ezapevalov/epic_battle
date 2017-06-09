@@ -46,11 +46,17 @@ class Vehicle extends Unit {
         }
     }
 
-    protected function move_to(Unit $unit) {
+    public function move_to($x, $y) {
+        $new_x = $x - $this->size_x/2 - 7;
+        $new_y = $y - $this->size_y/2 - 5;
 
+        $this->direction = $new_x > $this->pos_x ? 'right' : 'left';
+
+        $this->pos_x = $new_x;
+        $this->pos_y = $new_y;
     }
 
     public function attack(Unit $unit) {
-        $this->move_to($unit);
+//        $this->move_to($unit);
     }
 }

@@ -6,12 +6,13 @@ abstract class Unit {
     public $pos_y;
     public $size_x;
     public $size_y;
+    public $active = 0;
     public $type; // blue, red
     public $direction; // left, right
     public $forbidden_landscapes;
 
     abstract protected function init_start_position(Map &$map, $coordinates=null);
-    abstract protected function move_to(Unit $unit);
+    abstract public function move_to($x, $y);
     abstract public function attack(Unit $unit);
 
     public function set_type($type) {

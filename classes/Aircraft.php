@@ -20,11 +20,11 @@ class Aircraft extends Unit {
         }
     }
 
-    protected function move_to(Unit $unit) {
+    public function move_to($x, $y) {
 
     }
 
     public function attack(Unit $unit) {
-        $this->move_to($unit);
+//        $this->move_to($unit);
     }
 }

@@ -4,10 +4,28 @@ var map_context = map_canvas.getContext("2d");
 window.onload = function() {
     console.log(map_data);
 
-    init_map();
+    draw_map();
+
+    map_canvas.onclick = function (event) {
+        var data = {
+            action: 'click',
+            x: event.x,
+            y: event.y
+        };
+
+        $.post('/', data, function (response) {
+            response = JSON.parse(response);
+
+            map_data = response.map;
+            draw_map();
+        })
+
+    }
 };
 
-function init_map() {
+function draw_map() {
+    map_context.clearRect(0, 0, map_canvas.width, map_canvas.height);
+
     // Landscape elements
     draw_landscape();
 
@@ -64,69 +82,45 @@ function draw_landscape() {
 function draw_soldiers() {
     for ( var i = 0; i < map_data.soldiers.length; i++ ) {
         var soldier = map_data.soldiers[i];
-        var soldier_img = null;
+        var soldier_img = 'soldier_' + soldier.type + '_' + soldier.direction;
 
-        if ( soldier.type == 'blue' ) {
-            if ( soldier.direction == 'left' ) {
-                soldier_img =  soldier_blue_left_img;
-            } else if ( soldier.direction == 'right' ) {
-                soldier_img =  soldier_blue_right_img;
-            }
-        } else if ( soldier.type == 'red' ) {
-            if ( soldier.direction == 'left' ) {
-                soldier_img = soldier_red_left_img;
-            } else if ( soldier.direction == 'right' ) {
-                soldier_img = soldier_red_right_img;
-            }
+        if ( soldier.active == 1 ) {
+            soldier_img += '_active';
         }
 
-        map_context.drawImage(soldier_img, soldier.pos_x, soldier.pos_y);
+        soldier_img += '_img';
+
+        map_context.drawImage(window[soldier_img], soldier.pos_x, soldier.pos_y);
     }
 }
 
 function draw_vehicles() {
     for ( var i = 0; i < map_data.vehicles.length; i++ ) {
         var vehicle = map_data.vehicles[i];
-        var vehicle_img = null;
+        var vehicle_img = 'vehicle_' + vehicle.type + '_' + vehicle.direction;
 
-        if ( vehicle.type == 'blue' ) {
-            if ( vehicle.direction == 'left' ) {
-                vehicle_img =  vehicle_blue_left_img;
-            } else if ( vehicle.direction == 'right' ) {
-                vehicle_img =  vehicle_blue_right_img;
-            }
-        } else if ( vehicle.type == 'red' ) {
-            if ( vehicle.direction == 'left' ) {
-                vehicle_img = vehicle_red_left_img;
-            } else if ( vehicle.direction == 'right' ) {
-                vehicle_img = vehicle_red_right_img;
-            }
+        if ( vehicle.active == 1 ) {
+            vehicle_img += '_active';
         }
 
-        map_context.drawImage(vehicle_img, vehicle.pos_x, vehicle.pos_y);
+        vehicle_img += '_img';
+
+        map_context.drawImage(window[vehicle_img], vehicle.pos_x, vehicle.pos_y);
     }
 }
 
 function draw_aircrafts() {
     for ( var i = 0; i < map_data.aircrafts.length; i++ ) {
         var aircraft = map_data.aircrafts[i];
-        var aircraft_img = null;
+        var aircraft_img = 'aircraft_' + aircraft.type + '_' + aircraft.direction;
 
-        if ( aircraft.type == 'blue' ) {
-            if ( aircraft.direction == 'left' ) {
-                aircraft_img =  aircraft_blue_left_img;
-            } else if ( aircraft.direction == 'right' ) {
-                aircraft_img =  aircraft_blue_right_img;
-            }
-        } else if ( aircraft.type == 'red' ) {
-            if ( aircraft.direction == 'left' ) {
-                aircraft_img = aircraft_red_left_img;
-            } else if ( aircraft.direction == 'right' ) {
-                aircraft_img = aircraft_red_right_img;
-            }
+        if ( aircraft.active == 1 ) {
+            aircraft_img += '_active';
         }
 
-        map_context.drawImage(aircraft_img, aircraft.pos_x, aircraft.pos_y);
+        aircraft_img += '_img';
+
+        map_context.drawImage(window[aircraft_img], aircraft.pos_x, aircraft.pos_y);
     }
 }
 

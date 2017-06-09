@@ -18,6 +18,7 @@
 <script>
     var map_data = <?=json_encode($map)?>;
 </script>
+<script src="/assets/js/jquery-3.2.1.min.js"></script>
 <script src="/assets/js/images.js"></script>
 <script src="/assets/js/index.js"></script>
 
