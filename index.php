@@ -27,21 +27,11 @@ if ( isset($_SESSION['map']) ) {
 if ( isset($_POST['action']) ) {
     switch ($_POST['action']) {
         case 'click':
-            $map->remove_active_from_units();
-            $detected_unit = &$map->detect_unit($_POST['x'], $_POST['y']);
-
-            if ( $detected_unit ) {
-                if ( $detected_unit == $map->active_unit ) {
-                    $map->active_unit = null;
-                } else {
-                    $map->active_unit = $detected_unit;
-                    $detected_unit->active = 1;
-                }
-            } else if ( !$detected_unit && $map->active_unit ) {
-                $map->active_unit->move_to($_POST['x'], $_POST['y']);
-                $map->active_unit->active = 0;
-                $map->active_unit = null;
-            }
+            $map->click_event();
+            break;
+        case 'move':
+            $map->move_event();
+            break;
     }
 
     $_SESSION['map'] = $map;

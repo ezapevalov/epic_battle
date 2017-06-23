@@ -18,6 +18,7 @@ class Map {
     public $aircrafts=[];
 
     public $active_unit = Null;
+    public $motion_line = Null;
 
     public function __construct($size_x, $size_y) {
         $this->size_x = $size_x;
@@ -168,6 +169,68 @@ class Map {
             'size_x' =>  5 + $first_aircraft->size_x + 5 + $this->red_base->size_x + 10,
             'size_y' =>  5 + $this->red_base->size_y + 10
         ];
+    }
+
+    public function click_event() {
+        $this->remove_active_from_units();
+        $detected_unit = &$this->detect_unit($_POST['x'], $_POST['y']);
+
+        if ( $detected_unit ) {
+            if ( $detected_unit == $this->active_unit ) {
+                $this->active_unit = null;
+            } else {
+                $this->active_unit = $detected_unit;
+                $detected_unit->active = 1;
+            }
+        } else if ( !$detected_unit && $this->active_unit ) {
+            $this->active_unit->move_to($_POST['x'], $_POST['y']);
+            $this->active_unit->active = 0;
+            $this->active_unit = null;
+            $this->motion_line = null;
+        }
+    }
+
+    public function move_event() {
+        $available = 1;
+
+
+
+        $this->motion_line = [
+            'pos_x' => $_POST['x'],
+            'pos_y' => $_POST['y'],
+            'available' => 0
+        ];
+    }
+
+    public function intersection_line_segments($a, $b) {
+        $aa = $a['a'];
+        $ab = $a['b'];
+        $ba = $b['a'];
+        $bb = $b['b'];
+        $ix = 1;
+        $iy = 1;
+
+        $denominator = (($bb['y'] - $ba['y']) * ($ab['x'] - $aa['x'])) - (($bb['x'] - $ba['x']) * ($ab['y'] - $aa['y']));
+
+        if ( $denominator == 0 ) return false;
+
+        $va = $aa['y'] - $ba['y'];
+        $vb = $aa['x'] - $ba['x'];
+        $numerator1 = (($bb['x'] - $ba['x']) * $va) - (($bb['y'] - $ba['y']) * $vb);
+        $numerator2 = (($ab['x'] - $aa['x']) * $va) - (($ab['y'] - $aa['y']) * $vb);
+
+        $va = $numerator1 / $denominator;
+        $vb = $numerator2 / $denominator;
+        $ix = $aa['x'] + ($va * ($ab['x'] - $aa['x']));
+        $iy = $aa['y'] + ($va * ($ab['y'] - $aa['y']));
+
+//        return {
+//                point:new GEOM.Point(ix, iy),
+//            va:va,
+//            vb:vb,
+//            onA:va > 0 && va < 1,
+//            onB:vb > 0 && vb < 1
+//        }
     }
 
     public function detect_unit($x, $y) {

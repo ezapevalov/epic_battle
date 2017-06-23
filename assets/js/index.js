@@ -1,6 +1,9 @@
 var map_canvas = document.getElementById("map_canvas");
 var map_context = map_canvas.getContext("2d");
 
+var motion_timer;
+var motion_done_interval = 100;
+
 window.onload = function() {
     console.log(map_data);
 
@@ -18,10 +21,40 @@ window.onload = function() {
 
             map_data = response.map;
             draw_map();
-        })
+        });
 
+    };
+
+    map_canvas.onmousemove = function (event) {
+        if ( map_data.active_unit != null ) {
+            map_data.motion_line = {
+                pos_x : event.clientX,
+                pos_y : event.clientY,
+                available: 1
+            };
+
+            draw_map();
+
+            clearTimeout(motion_timer);
+            motion_timer = setTimeout(check_unit_path, motion_done_interval);
+        }
     }
 };
+
+function check_unit_path() {
+    var data = {
+        action: 'move',
+        x: map_data.motion_line.pos_x,
+        y: map_data.motion_line.pos_y
+    };
+
+    $.post('/', data, function (response) {
+        response = JSON.parse(response);
+
+        map_data = response.map;
+        draw_map();
+    });
+}
 
 function draw_map() {
     map_context.clearRect(0, 0, map_canvas.width, map_canvas.height);
@@ -29,13 +62,33 @@ function draw_map() {
     // Landscape elements
     draw_landscape();
 
+    // Base
+    draw_bases();
+
     // Units
     draw_soldiers();
     draw_vehicles();
     draw_aircrafts();
 
-    // Base
-    draw_bases();
+    draw_motion_line();
+}
+
+function draw_motion_line() {
+    if ( map_data.active_unit != null && map_data.motion_line != null ) {
+        var from_x = map_data.active_unit.pos_x + map_data.active_unit.size_x / 2;
+        var from_y = map_data.active_unit.pos_y + map_data.active_unit.size_y / 2;
+        var to_x = map_data.motion_line.pos_x;
+        var to_y = map_data.motion_line.pos_y;
+        var color = map_data.motion_line.available == 1 ? "#07C908" : "#C90B12";
+
+        map_context.beginPath();
+
+        map_context.moveTo(from_x, from_y);
+        map_context.lineTo(to_x, to_y);
+
+        map_context.strokeStyle = color;
+        map_context.stroke();
+    }
 }
 
 function draw_landscape() {

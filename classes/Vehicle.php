@@ -47,8 +47,8 @@ class Vehicle extends Unit {
     }
 
     public function move_to($x, $y) {
-        $new_x = $x - $this->size_x/2 - 7;
-        $new_y = $y - $this->size_y/2 - 5;
+        $new_x = $x - $this->size_x/2;
+        $new_y = $y - $this->size_y/2;
 
         $this->direction = $new_x > $this->pos_x ? 'right' : 'left';
 
